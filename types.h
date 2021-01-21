@@ -2,6 +2,6 @@
 #define RCURL "RCURL"
 #define LSQUARE "LSQUARE"
 #define RSQUARE "RSQUARE"
-#define QUOTE "QUOTE"
+#define STRING "STRING"
 #define COLON "COLON"
 #define COMMA "COMMA"
