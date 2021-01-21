@@ -1,0 +1,7 @@
+#define LCURL "LCURL"
+#define RCURL "RCURL"
+#define LSQUARE "LSQUARE"
+#define RSQUARE "RSQUARE"
+#define QUOTE "QUOTE"
+#define COLON "COLON"
+#define COMMA "COMMA"
