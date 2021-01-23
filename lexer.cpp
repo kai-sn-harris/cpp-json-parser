@@ -28,6 +28,37 @@ Token Lexer::string() {
     return Token(STRING, fullString);
 }
 
+Token Lexer::number() {
+    std::string num;
+    while(isdigit(this->currentChar) && !this->charIsNone) {
+        num += this->currentChar;
+        this->advance();
+    }
+    if(this->currentChar == '.') {
+        num += '.';
+        this->advance();
+        while(isdigit(this->currentChar) && !this->charIsNone) {
+            num += this->currentChar;
+            this->advance();
+        }
+    }
+    return Token(NUMBER, num);
+}
+
+Token Lexer::boolean() {
+    std::string boolStr;
+    while(isalpha(this->currentChar) && !this->charIsNone) {
+        boolStr += this->currentChar;
+        this->advance();
+    }
+    if(boolStr != "true" && boolStr != "false") {
+        // text is neither true nor false and as such an error is thrown
+        std::cout << "Invalid bool: " << boolStr << std::endl;
+        exit(-1);
+    }
+    return Token(BOOLEAN, boolStr);
+}
+
 void Lexer::error(std::string msg) {
     std::cout << msg << std::endl;
     exit(-1);
@@ -41,6 +72,12 @@ Token Lexer::getNextToken() {
             this->advance();
             continue;
         }
+
+        if(isalpha(currentChar))
+            return this->boolean();
+
+        if(isdigit(currentChar))
+            return this->number();
 
         if(currentChar == '{') {
             this->advance();

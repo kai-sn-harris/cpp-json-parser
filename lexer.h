@@ -5,6 +5,7 @@ class Token {
 public:
     std::string value, type;
     Token(std::string type, std::string value): value(value), type(type) {}
+    Token() = default;
 };
 
 class Lexer {
@@ -21,5 +22,6 @@ public:
     Token getNextToken();
     void advance();
     Token string();
-
+    Token number();
+    Token boolean();
 };
