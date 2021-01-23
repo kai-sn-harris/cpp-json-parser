@@ -5,3 +5,4 @@
 #define STRING "STRING"
 #define COLON "COLON"
 #define COMMA "COMMA"
+#define EOF "EOF"

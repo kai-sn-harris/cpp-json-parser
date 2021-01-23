@@ -72,4 +72,5 @@ Token Lexer::getNextToken() {
 
         this->error("Invalid symbol: '" + std::string(1, currentChar) + "' at pos " + std::to_string(this->pos));
     }
+    return Token(EOF, EOF);
 }
