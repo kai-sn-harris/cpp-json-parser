@@ -45,18 +45,21 @@ Token Lexer::number() {
     return Token(NUMBER, num);
 }
 
-Token Lexer::boolean() {
-    std::string boolStr;
+Token Lexer::id() {
+    std::string idStr;
     while(isalpha(this->currentChar) && !this->charIsNone) {
-        boolStr += this->currentChar;
+        idStr += this->currentChar;
         this->advance();
     }
-    if(boolStr != "true" && boolStr != "false") {
+    if(idStr != "true" && idStr != "false" && idStr != "null") {
         // text is neither true nor false and as such an error is thrown
-        std::cout << "Invalid bool: " << boolStr << std::endl;
+        std::cout << "Invalid type: " << idStr << std::endl;
         exit(-1);
     }
-    return Token(BOOLEAN, boolStr);
+    if(idStr == "true" || idStr == "false")
+        return Token(BOOLEAN, idStr);
+    else
+        return Token(_NULL, idStr);
 }
 
 void Lexer::error(std::string msg) {
@@ -74,7 +77,7 @@ Token Lexer::getNextToken() {
         }
 
         if(isalpha(currentChar))
-            return this->boolean();
+            return this->id();
 
         if(isdigit(currentChar))
             return this->number();

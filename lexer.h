@@ -23,5 +23,5 @@ public:
     void advance();
     Token string();
     Token number();
-    Token boolean();
+    Token id();
 };
