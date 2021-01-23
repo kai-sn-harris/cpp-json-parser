@@ -1,0 +1,8 @@
+object : LCURL object_list RCURL
+object_list : (object_statement (COMMA object_list)*)*
+object_statement : STRING COLON value
+
+array : LSQUARE array_list RSQUARE
+array_list : (value (COMMA array_list)*)*
+
+value : STRING | NUMBER | object | array | TRUE | FALSE | NULL
