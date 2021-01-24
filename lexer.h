@@ -16,6 +16,7 @@ public:
     std::string text;
 
     Lexer(std::string text);
+    Lexer() = default;
 
     void error(std::string msg);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 
