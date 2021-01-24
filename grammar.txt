@@ -1,6 +1,5 @@
 object : LCURL object_list RCURL
-object_list : (object_statement (COMMA object_list)*)*
-object_statement : STRING COLON value
+object_list : (STRING COLON value (COMMA object_list)*)*
 
 array : LSQUARE array_list RSQUARE
 array_list : (value (COMMA array_list)*)*
