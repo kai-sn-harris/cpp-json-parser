@@ -81,10 +81,11 @@ Value* Parser::array() {
     return new Array(values);
 }
 
-std::vector<Value*> Parser::objectList() {
+std::vector<Assign*> Parser::objectList() {
+    String* left = new String(this->currentToken.value);
     this->eat(STRING);
     this->eat(COLON);
-    std::vector<Value*> values = { this->value() };
+    std::vector<Assign*> values = { new Assign(left, this->value()) };
     while(this->currentToken.type == COMMA) {
         this->eat(COMMA);
         for(auto elem : this->objectList())
@@ -95,7 +96,7 @@ std::vector<Value*> Parser::objectList() {
 
 Value* Parser::object() {
     this->eat(LCURL);
-    std::vector<Value*> values = this->objectList();
+    std::vector<Assign*> values = this->objectList();
     this->eat(RCURL);
     Object* objPtr = new Object(values);
     return objPtr;

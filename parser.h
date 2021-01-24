@@ -13,8 +13,7 @@ public:
     void error(std::string msg); 
 
     Value* object();
-    std::vector<Value*> objectList();
-    Value* objectStatement();
+    std::vector<Assign*> objectList();
 
     Value* array();
     std::vector<Value*> arrayList();
