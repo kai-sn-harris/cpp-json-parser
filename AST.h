@@ -14,18 +14,6 @@ public:
     Value(std::string type): type(type), AST("value") {} 
 };
 
-class Object : public Value {
-public:
-    std::vector<Value*> values;
-    Object(std::vector<Value*> values): values(values), Value("object") {}
-};
-
-class Array : public Value {
-public:
-    std::vector<Value*> values;
-    Array(std::vector<Value*> values): values(values), Value("array") {}
-};
-
 class String : public Value {
 public:
     std::string value;
@@ -55,4 +43,16 @@ public:
     Value* right;
     Assign(String* left, Value* right):
         left(left), right(right), AST("assign") {}
+};
+
+class Object : public Value {
+public:
+    std::vector<Assign*> values;
+    Object(std::vector<Assign*> values): values(values), Value("object") {}
+};
+
+class Array : public Value {
+public:
+    std::vector<Value*> values;
+    Array(std::vector<Value*> values): values(values), Value("array") {}
 };
