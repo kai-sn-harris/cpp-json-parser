@@ -5,4 +5,7 @@
 #define STRING "STRING"
 #define COLON "COLON"
 #define COMMA "COMMA"
+#define NUMBER "NUMBER"
+#define BOOLEAN "BOOLEAN"
+#define _NULL "NULL"
 #define EOF "EOF"
