@@ -6,12 +6,14 @@ class AST {
 public:
     std::string ASTtype;
     AST(std::string ASTtype): ASTtype(ASTtype) {}
+    virtual ~AST() = default;
 };
 
 class Value : public AST {
 public:
     std::string type;
-    Value(std::string type): type(type), AST("value") {} 
+    Value(std::string type): type(type), AST("value") {}
+    virtual ~Value() = default;
 };
 
 class String : public Value {
