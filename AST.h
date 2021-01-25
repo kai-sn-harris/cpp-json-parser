@@ -36,7 +36,7 @@ public:
 
 class Null : public Value {
 public:
-    Null(): Value("Null") {}
+    Null(): Value("null") {}
 };
 
 class Assign : public AST {
