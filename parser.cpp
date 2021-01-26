@@ -102,12 +102,12 @@ Value* Parser::object() {
     return objPtr;
 }
 
-AST Parser::ast() {
+AST* Parser::ast() {
     std::string tokType = this->currentToken.type;
     if(tokType == LCURL)
-        return *this->object();
+        return this->object();
     if(tokType == LSQUARE)
-        return *this->array();
+        return this->array();
     
     this->error("Invalid thing ig idek");
 }
