@@ -20,7 +20,6 @@ public:
     std::string visitString(Value* node);
     float visitNumber(Value* node);
     bool visitBoolean(Value* node);
-    std::string visitNull(Value* node);
 
     std::string get(std::string key);
 };

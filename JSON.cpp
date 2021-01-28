@@ -35,11 +35,42 @@ void JSON::visitNode(AST* node, std::map<std::string, std::any> &map) {
 		if(rightType == "null") {
 			map.insert(std::pair<std::string, std::any>(left, std::string("null")));
 		}
+		if(rightType == "object") {
+			Object* objPtr = dynamic_cast<Object*>(assignPtr->right);
+			std::map<std::string, std::any> objMap;
+			for(auto elem : objPtr->values)
+				this->visitNode(elem, objMap);
+			map.insert(std::pair<std::string, std::any>(left, objMap));
+		}
+		if(rightType == "array") {
+			Array* arrayPtr = dynamic_cast<Array*>(assignPtr->right);
+			std::vector<std::any> values;
+			for(auto elem : arrayPtr->values) {
+				if(elem->type == "string") values.push_back(this->visitString(elem));
+				if(elem->type == "number") values.push_back(this->visitNumber(elem));
+				if(elem->type == "null") values.push_back("null");
+				if(elem->type == "boolean") values.push_back(this->visitBoolean(elem));
+				if(elem->type == "object") {
+					Object* objPtr = dynamic_cast<Object*>(elem);
+					std::map<std::string, std::any> objMap;
+					for(auto elem : objPtr->values)
+						this->visitNode(elem, objMap);
+					values.push_back(objMap);
+				}
+			}
+			map.insert(std::pair<std::string, std::any>(left, values));
+		}
 	}
 	// assume it is an obj for now fuck arrays tbh
 	if(node->ASTtype == "value") {
-		for(auto elem : dynamic_cast<Object*>(node)->values)
-			this->visitNode(elem, map);
+		Value* valuePtr = dynamic_cast<Value*>(node);
+		if(valuePtr->type == "object") {
+			for(auto elem : dynamic_cast<Object*>(node)->values)
+				this->visitNode(elem, map);
+		}
+		if(valuePtr->type == "array") {
+			// idk what to do here yet
+		}
 	}
 }
 
