@@ -1,8 +1,8 @@
 {
-	"array": [
-		"Hey!",
-		{
-			"objInArray": "Hello!"
-		}
-	]
+	"string": "Test string!",
+	"number": 4.56,
+	"obj": {
+		"stringInObj": "Hello world!"
+	},
+	"array": ["asd", "second array item!"]
 }
