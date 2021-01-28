@@ -48,7 +48,7 @@ void JSON::visitNode(AST* node, std::map<std::string, std::any> &map) {
 			for(auto elem : arrayPtr->values) {
 				if(elem->type == "string") values.push_back(this->visitString(elem));
 				if(elem->type == "number") values.push_back(this->visitNumber(elem));
-				if(elem->type == "null") values.push_back("null");
+				if(elem->type == "null") values.push_back(std::string("null"));
 				if(elem->type == "boolean") values.push_back(this->visitBoolean(elem));
 				if(elem->type == "object") {
 					Object* objPtr = dynamic_cast<Object*>(elem);
@@ -93,31 +93,4 @@ void JSON::generate() {
 	this->visitNode(parser.ast(), this->variables);
 }
 
-// std::string JSON::get(std::string key) {
-// 	std::vector<std::string> keys;
-// 	std::string word;
-// 	for(int i = 0; i < key.size(); i++) {
-// 		if(key[i] == ' ') {
-// 			keys.push_back(word);
-// 			word = "";
-// 		}
-// 		word += key[i];
-// 	}
-// 	// last word
-// 	keys.push_back(word);
-
-// 	Val value;
-// 	for(int i = 0; i < keys.size(); i++) {
-// 		std::cout << keys[i] << std::endl;
-// 		if(i == 0) value = this->variables[keys[0]];
-// 		else if(i == keys.size()-2) value = value;
-// 		else {
-// 			if(value.type == "string") return value.stringVal;
-// 			if(value.type == "bool") return std::to_string(value.boolVal);
-// 			if(value.type == "number") return std::to_string(value.numberVal);
-// 			if(value.type == "null") return value.nullVal;
-// 		}
-// 		std::cout << "did we get here" << std::endl;
-// 	}
-// 	return std::any_cast<std::string>(value);
-// }
+// Implementation for JSON::get<>() inside header because it will cause a linker error
