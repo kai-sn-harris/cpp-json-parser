@@ -20,5 +20,5 @@ public:
 
     Value* value();
 
-    AST ast();
+    AST* ast();
 };
