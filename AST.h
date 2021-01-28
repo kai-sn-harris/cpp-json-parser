@@ -51,6 +51,7 @@ class Object : public Value {
 public:
     std::vector<Assign*> values;
     Object(std::vector<Assign*> values): values(values), Value("object") {}
+    Object(): Value("object") {}
 };
 
 class Array : public Value {
