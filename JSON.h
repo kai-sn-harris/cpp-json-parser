@@ -22,7 +22,7 @@ public:
     bool visitBoolean(Value* node);
 
     template <class T>
-    T get(std::string key) {
+    T get(std::string key, std::map<std::string, std::any> map) {
         std::vector<std::string> keys;
         std::string word;
         for(int i = 0; i < key.size(); i++) {
@@ -36,11 +36,13 @@ public:
 
         std::any value;
         for(int i = 0; i < keys.size(); i++) {
-            if(i == 0) value = this->variables[keys[0]];
+            if(i == 0) value = map[keys[0]];
             // ignoring arrays for now
             else if(i > 0 && i < keys.size()-2) value = std::any_cast<std::map<std::string, std::any>>(value)[keys[i]];
             else value = std::any_cast<T>(std::any_cast<std::map<std::string, std::any>>(value)[keys[i]]);
         }
         return std::any_cast<T>(value);
     }
+
+    std::map<std::string, std::any> anyToObj(std::any val) { return std::any_cast<std::map<std::string, std::any>>(val); }
 };
