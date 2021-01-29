@@ -16,10 +16,6 @@ public:
     JSON(std::string fileName);
     
     void generate();
-    void visitNode(AST* node, std::map<std::string, std::any> &map);
-    std::string visitString(Value* node);
-    float visitNumber(Value* node);
-    bool visitBoolean(Value* node);
 
     template <class T>
     T get(std::string key, std::map<std::string, std::any> map) {
@@ -45,4 +41,10 @@ public:
     }
 
     std::map<std::string, std::any> anyToObj(std::any val) { return std::any_cast<std::map<std::string, std::any>>(val); }
+
+private:
+    void visitNode(AST* node, std::map<std::string, std::any> &map);
+    std::string visitString(Value* node);
+    float visitNumber(Value* node);
+    bool visitBoolean(Value* node);
 };
