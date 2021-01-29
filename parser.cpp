@@ -109,5 +109,5 @@ AST* Parser::ast() {
     if(tokType == LSQUARE)
         return this->array();
     
-    this->error("Invalid thing ig idek");
+    this->error("Invalid json");
 }
