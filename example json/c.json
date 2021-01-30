@@ -1,0 +1,10 @@
+[
+	[
+		{
+			"objectInArrayInRootArray": "Hello, world!"
+		}
+	],
+	{
+		"object in root array": 25.235
+	}
+]
