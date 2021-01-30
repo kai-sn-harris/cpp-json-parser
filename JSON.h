@@ -15,8 +15,6 @@ public:
     std::vector<std::any> rootArray;
     std::string text;
     JSON(std::string fileName);
-    
-    void generate();
 
     template <class T>
     T get(std::string key) {
@@ -61,4 +59,5 @@ private:
     float visitNumber(Value* node);
     bool visitBoolean(Value* node);
     std::vector<std::any> visitArray(Value* node);
+    void generate();
 };

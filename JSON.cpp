@@ -11,6 +11,7 @@ JSON::JSON(std::string fileName) {
 		text += temp + "\n";
 	file.close();
 	this->text = text;
+	this->generate();
 }
 
 // Visiting Nodes
