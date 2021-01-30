@@ -53,4 +53,5 @@ private:
     std::string visitString(Value* node);
     float visitNumber(Value* node);
     bool visitBoolean(Value* node);
+    std::vector<std::any> visitArray(Value* node);
 };

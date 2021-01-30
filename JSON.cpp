@@ -43,21 +43,7 @@ void JSON::visitNode(AST* node, std::map<std::string, std::any> &map) {
 			map.insert(std::pair<std::string, std::any>(left, objMap));
 		}
 		if(rightType == "array") {
-			Array* arrayPtr = dynamic_cast<Array*>(assignPtr->right);
-			std::vector<std::any> values;
-			for(auto elem : arrayPtr->values) {
-				if(elem->type == "string") values.push_back(this->visitString(elem));
-				if(elem->type == "number") values.push_back(this->visitNumber(elem));
-				if(elem->type == "null") values.push_back(std::string("null"));
-				if(elem->type == "boolean") values.push_back(this->visitBoolean(elem));
-				if(elem->type == "object") {
-					Object* objPtr = dynamic_cast<Object*>(elem);
-					std::map<std::string, std::any> objMap;
-					for(auto elem : objPtr->values)
-						this->visitNode(elem, objMap);
-					values.push_back(objMap);
-				}
-			}
+			std::vector<std::any> values = this->visitArray(assignPtr->right);
 			map.insert(std::pair<std::string, std::any>(left, values));
 		}
 	}
@@ -84,6 +70,26 @@ float JSON::visitNumber(Value* node) {
 
 bool JSON::visitBoolean(Value* node) {
 	return dynamic_cast<Boolean*>(node)->value;
+}
+
+std::vector<std::any> JSON::visitArray(Value* node) {
+	Array* arrayPtr = dynamic_cast<Array*>(node);
+	std::vector<std::any> values;
+	for(auto elem : arrayPtr->values) {
+		if(elem->type == "string") values.push_back(this->visitString(elem));
+		if(elem->type == "number") values.push_back(this->visitNumber(elem));
+		if(elem->type == "null") values.push_back(std::string("null"));
+		if(elem->type == "boolean") values.push_back(this->visitBoolean(elem));
+		if(elem->type == "object") {
+			Object* objPtr = dynamic_cast<Object*>(elem);
+			std::map<std::string, std::any> objMap;
+			for(auto elem : objPtr->values)
+				this->visitNode(elem, objMap);
+			values.push_back(objMap);
+		}
+		if(elem->type == "array") values.push_back(this->visitArray(elem));
+	}
+	return values;
 }
 
 // visit nodes and fill in variable table
