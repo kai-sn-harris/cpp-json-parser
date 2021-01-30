@@ -4,5 +4,10 @@
 	"obj": {
 		"stringInObj": "Hello world!"
 	},
-	"array": ["asd", "second array item!"]
+	"array": [
+		{
+			"how": 69420
+		},
+		"second array item!"
+	]
 }
