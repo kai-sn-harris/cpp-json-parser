@@ -8,6 +8,7 @@
 		{
 			"how": 69420
 		},
-		"second array item!"
+		"second array item!",
+		["array inside array", ["array inside array inside array"]]
 	]
 }

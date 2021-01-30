@@ -8,5 +8,6 @@ int main(int argc, char* argv[]) {
     std::cout << json.get<std::string>("obj.stringInObj", json.variables) << std::endl;
     std::cout << json.get<float>("number", json.variables) << std::endl;
     std::cout << json.get<float>("array.0.how", json.variables) << std::endl;
-    std::cout << json.get<std::string>("array.1", json.variables) << std::endl;
+    std::cout << json.get<std::string>("array.2.0", json.variables) << std::endl;
+    std::cout << json.get<std::string>("array.2.1.0", json.variables) << std::endl;
 }
