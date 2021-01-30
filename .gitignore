@@ -1,3 +1,2 @@
-a.exe
-b.exe
+*.exe
 .vscode
