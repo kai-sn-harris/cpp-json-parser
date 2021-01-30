@@ -18,7 +18,7 @@ public:
     void generate();
 
     template <class T>
-    T get(std::string key, std::map<std::string, std::any> map) {
+    T get(std::string key) {
         std::vector<std::string> keys;
         std::string word;
         for(int i = 0; i < key.size(); i++) {
@@ -32,7 +32,7 @@ public:
 
         std::any value;
         for(int i = 0; i < keys.size(); i++) {
-            if(i == 0) value = map[keys[0]];
+            if(i == 0) value = this->variables[keys[0]];
             else {
                 try {
                     // for object
