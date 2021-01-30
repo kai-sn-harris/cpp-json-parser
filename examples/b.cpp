@@ -3,7 +3,6 @@
 
 int main(int argc, char* argv[]) {
     JSON json("../example json/b.json");
-    json.generate();
     std::cout << json.get<std::string>("web-app.servlet.0.servlet-name") << std::endl;
 }
 
