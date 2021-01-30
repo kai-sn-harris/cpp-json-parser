@@ -33,9 +33,15 @@ public:
         std::any value;
         for(int i = 0; i < keys.size(); i++) {
             if(i == 0) value = map[keys[0]];
-            // ignoring arrays for now
-            else if(i > 0 && i < keys.size()-2) value = std::any_cast<std::map<std::string, std::any>>(value)[keys[i]];
-            else value = std::any_cast<T>(std::any_cast<std::map<std::string, std::any>>(value)[keys[i]]);
+            else {
+                try {
+                    // for object
+                    value = std::any_cast<std::map<std::string, std::any>>(value)[keys[i]];
+                } catch(std::bad_any_cast const&) {
+                    // for array
+                    value = std::any_cast<std::vector<std::any>>(value)[std::stoi(keys[i])];
+                }
+            }
         }
         return std::any_cast<T>(value);
     }
