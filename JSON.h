@@ -12,6 +12,7 @@
 class JSON {
 public:
     std::map<std::string, std::any> variables;
+    std::vector<std::any> rootArray;
     std::string text;
     JSON(std::string fileName);
     
@@ -19,6 +20,11 @@ public:
 
     template <class T>
     T get(std::string key) {
+        bool isRootArray = false;
+        if(key.size() > 4 && (key[0] == '(' && key[1] == 'a' && key[2] == 'r' && key[3] == ')')) {
+            isRootArray = true;
+            key.erase(0, 4);
+        }
         std::vector<std::string> keys;
         std::string word;
         for(int i = 0; i < key.size(); i++) {
@@ -32,7 +38,10 @@ public:
 
         std::any value;
         for(int i = 0; i < keys.size(); i++) {
-            if(i == 0) value = this->variables[keys[0]];
+            if(i == 0) {
+                if(!isRootArray) value = this->variables[keys[0]];
+                else value = this->rootArray[std::stoi(keys[0])];
+            }
             else {
                 try {
                     // for object
@@ -45,8 +54,6 @@ public:
         }
         return std::any_cast<T>(value);
     }
-
-    std::map<std::string, std::any> anyToObj(std::any val) { return std::any_cast<std::map<std::string, std::any>>(val); }
 
 private:
     void visitNode(AST* node, std::map<std::string, std::any> &map);

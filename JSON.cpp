@@ -55,7 +55,7 @@ void JSON::visitNode(AST* node, std::map<std::string, std::any> &map) {
 				this->visitNode(elem, map);
 		}
 		if(valuePtr->type == "array") {
-			// idk what to do here yet
+			this->rootArray = this->visitArray(valuePtr);
 		}
 	}
 }
