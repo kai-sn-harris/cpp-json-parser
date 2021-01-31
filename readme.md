@@ -1,5 +1,7 @@
 # JSON parser
 
+This JSON parser for c++ is easy to use, and easy to learn. Below is an example of how the parser is used in a basic c++ program.
+
 ## Usage
 
 Example JSON:
@@ -55,7 +57,7 @@ Now you can work with json data in c++! The function used to extract data from j
 }
 ```
 
-To access person1's full name, the key you need to use is this: `"person1.full-name"`. ie: Every time you want to travel 1 object or array deeper, use a `'.'` then add the name of the next object.
+To access person1's full name, the key you need to use is this: `"person1.full-name"`. ie: Every time you want to travel 1 object or array deeper, use a `'.'` then add the name of the next object or array index.
 <br/>
 <br/>
 To access person2's first friend, the function would be: `json.get<std::string>("person2.friends.0")` . The 0 at the end of the key is the index inside of the person2's friends array. The value of that index in the array may be an object, and it is valid to tag on extra `.valueName` tags onto the end of that 0.
