@@ -5,6 +5,8 @@
 #include <iostream>
 #include <map>
 #include <any>
+#include <exception>
+#include <type_traits>
 #include "lexer.h"
 #include "types.h"
 #include "parser.h"
@@ -18,6 +20,7 @@ public:
 
     template <class T>
     T get(std::string key) {
+        std::string raw_key = key;
         bool isRootArray = false;
         if(key.size() > 4 && (key[0] == '(' && key[1] == 'a' && key[2] == 'r' && key[3] == ')')) {
             isRootArray = true;
@@ -37,8 +40,14 @@ public:
         std::any value;
         for(int i = 0; i < keys.size(); i++) {
             if(i == 0) {
-                if(!isRootArray) value = this->variables[keys[0]];
-                else value = this->rootArray[std::stoi(keys[0])];
+                if(!isRootArray) {
+                    if(this->variables[keys[0]].has_value()) value = this->variables[keys[0]];
+                    else throw std::runtime_error("There is no root object. Add \"(ar)\" to your key to read from the root array array.");
+                }
+                else {
+                    if(this->rootArray.size() != 0) value = this->rootArray[std::stoi(keys[0])];
+                    else throw std::runtime_error("There is no root array. Remove \"(ar)\" from your key to read from the root object.");
+                }
             }
             else {
                 try {
@@ -50,7 +59,15 @@ public:
                 }
             }
         }
-        return std::any_cast<T>(value);
+        try {
+            return std::any_cast<T>(value);
+        } catch(std::bad_any_cast const&) {
+            std::string type;
+            if(std::is_same<T, std::string>()) type = "string";
+            if(std::is_same<T, float>()) type = "float";
+            if(std::is_same<T, bool>()) type = "bool";
+            throw std::runtime_error("Cannot convert data from location " + raw_key + " to type " + type);
+        }
     }
 
 private:
