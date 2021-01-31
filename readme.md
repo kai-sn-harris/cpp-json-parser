@@ -1,7 +1,5 @@
 # JSON parser
 
-This is a JSON parser for c++. Not sure why anyone would use this parser over the other <em>better</em> options out there, but I have created one nonetheless.
-
 ## Usage
 
 Example JSON:
