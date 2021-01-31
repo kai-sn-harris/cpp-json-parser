@@ -22,7 +22,6 @@ Example c++:
 
 int main() {
     JSON json("pathToJSON.json");
-    json.generate();
     std::string string = json.get<std::string>("string");
     float floatInObject = json.get<float>("object.floatInObject");
 }
