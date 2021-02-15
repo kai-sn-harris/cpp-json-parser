@@ -77,3 +77,4 @@ The function required to extract the value `"object in root array"` is as follow
 ## Current Known Issues
 
 -   Problems with character codes (things such as use of emojis 🙂 and special characters such as 'π')
+-   Memory leaks in AST
