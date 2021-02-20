@@ -52,9 +52,8 @@ Token Lexer::id() {
         this->advance();
     }
     if(idStr != "true" && idStr != "false" && idStr != "null") {
-        // text is neither true nor false and as such an error is thrown
-        std::cout << "Invalid type: " << idStr << std::endl;
-        exit(-1);
+        // text isn't true, false, or null and as such an error is thrown
+        this->error("Invalid type: " + idStr);
     }
     if(idStr == "true" || idStr == "false")
         return Token(BOOLEAN, idStr);
