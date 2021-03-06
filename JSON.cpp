@@ -2,7 +2,17 @@
 
 JSON::JSON(std::string fileName) {
 	this->fileName = fileName;
-	this->refresh();
+	std::string text, temp;
+	std::ifstream file(this->fileName);
+	if(!file.is_open()) {
+		std::cout << "Problem opening \"" << fileName << "\"" << std::endl;
+		exit(-1);
+	}
+	while(std::getline(file, temp))
+		text += temp + "\n";
+	file.close();
+	this->text = text;
+	this->generate();
 }
 
 // Visiting Nodes
@@ -146,23 +156,4 @@ void JSON::writeVal(std::string type, Value* value) {
 		this->text += std::to_string(dynamic_cast<Boolean*>(value)->value);
 	else
 		std::runtime_error("Something went wrong in the JSON::rewriteJSON() function");
-}
-
-void JSON::refresh() {
-	// empty variables and root array
-	std::map<std::string, std::any> map;
-	this->variables = map;
-	std::vector<std::any> rootArray;
-	this->rootArray = rootArray;
-	std::string text, temp;
-	std::ifstream file(this->fileName);
-	if(!file.is_open()) {
-		std::cout << "Problem opening \"" << fileName << "\"" << std::endl;
-		exit(-1);
-	}
-	while(std::getline(file, temp))
-		text += temp + "\n";
-	file.close();
-	this->text = text;
-	this->generate();
 }

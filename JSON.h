@@ -19,14 +19,6 @@ public:
     std::string fileName;
     JSON(std::string fileName);
 
-    /*
-        Called after json file modifiction. This is so that the AST
-        reflects the changes the user made (using this->write()) and so 
-        that this->get() will output a value that correctly correspond to 
-        the modified json file
-    */
-   void refresh();
-
     template <class T>
     T get(std::string key) {
         std::string raw_key = key;
@@ -106,6 +98,17 @@ public:
         file.open(this->fileName, std::ofstream::out | std::ofstream::trunc);
         file << this->text;
         file.close();
+
+        // refresh the AST so that this->get<>() works
+        // empty variables and root array
+        std::map<std::string, std::any> map;
+        this->variables = map;
+        std::vector<std::any> rootArray;
+        this->rootArray = rootArray;
+
+        Lexer lexer(this->text);
+        Parser parser(lexer);
+        this->visitNode(parser.ast(), this->variables);
     }
 
 private:
