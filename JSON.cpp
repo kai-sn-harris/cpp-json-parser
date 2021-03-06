@@ -1,17 +1,8 @@
 #include "JSON.h"
 
 JSON::JSON(std::string fileName) {
-	std::string text, temp;
-	std::ifstream file(fileName);
-	if(!file.is_open()) {
-		std::cout << "Problem opening \"" << fileName << "\"" << std::endl;
-		exit(-1);
-	}
-	while(std::getline(file, temp))
-		text += temp + "\n";
-	file.close();
-	this->text = text;
-	this->generate();
+	this->fileName = fileName;
+	this->refresh();
 }
 
 // Visiting Nodes
@@ -48,7 +39,6 @@ void JSON::visitNode(AST* node, std::map<std::string, std::any> &map) {
 			map.insert(std::pair<std::string, std::any>(left, values));
 		}
 	}
-	// assume it is an obj for now fuck arrays tbh
 	if(node->ASTtype == "value") {
 		Value* valuePtr = dynamic_cast<Value*>(node);
 		if(valuePtr->type == "object") {
@@ -100,4 +90,79 @@ void JSON::generate() {
 	this->visitNode(parser.ast(), this->variables);
 }
 
-// Implementation for JSON::get<>() inside header because it will cause a linker error
+void JSON::modNode(AST* node, std::string value) {
+	dynamic_cast<String*>(node)->value = value;
+}
+void JSON::modNode(AST* node, const char* value) {
+	dynamic_cast<String*>(node)->value = std::string(value);
+}
+void JSON::modNode(AST* node, bool value) {
+	dynamic_cast<Boolean*>(node)->value = value;
+}
+void JSON::modNode(AST* node, float value) {
+	dynamic_cast<Number*>(node)->value = value;
+}
+
+void JSON::rewriteJSON(AST* node) {
+	/*
+		This function acts like a parser, but instead of generating an AST,
+		it generates a string of json
+	*/
+
+	// check if the root type is object or array
+	if(node->ASTtype == "value" && dynamic_cast<Value*>(node)->type == "object") {
+		this->text += "{";
+		for(int i = 0; i < dynamic_cast<Object*>(node)->values.size(); i++) {
+			this->rewriteJSON(dynamic_cast<Object*>(node)->values[i]);
+			if(i < dynamic_cast<Object*>(node)->values.size()-1) this->text += ",";
+		}
+		this->text += "}";
+	} else if(node->ASTtype == "value" && dynamic_cast<Value*>(node)->type == "array") {
+		this->text += "[";
+		for(int i = 0; i < dynamic_cast<Array*>(node)->values.size(); i++) {
+			this->rewriteJSON(dynamic_cast<Array*>(node)->values[i]);
+			if(i < dynamic_cast<Array*>(node)->values.size()-1) this->text += ",";
+		}
+		this->text += "]";
+	} else if(node->ASTtype == "assign") {
+		auto assignPtr = dynamic_cast<Assign*>(node);
+		this->text += "\"" + assignPtr->left->value + "\":";
+		this->writeVal(assignPtr->right->type, assignPtr->right);
+	} else if(node->ASTtype == "value") {
+		auto valPtr = dynamic_cast<Value*>(node);
+		std::string valType = valPtr->type;
+		this->writeVal(valPtr->type, valPtr);
+	}
+}
+
+void JSON::writeVal(std::string type, Value* value) {
+	if(type == "object" || type == "array")
+		this->rewriteJSON(value);
+	else if(type == "string" || type == "null")
+		this->text += "\"" + dynamic_cast<String*>(value)->value + "\"";
+	else if(type == "number")
+		this->text += std::to_string(dynamic_cast<Number*>(value)->value);
+	else if(type == "boolean")
+		this->text += std::to_string(dynamic_cast<Boolean*>(value)->value);
+	else
+		std::runtime_error("Something went wrong in the JSON::rewriteJSON() function");
+}
+
+void JSON::refresh() {
+	// empty variables and root array
+	std::map<std::string, std::any> map;
+	this->variables = map;
+	std::vector<std::any> rootArray;
+	this->rootArray = rootArray;
+	std::string text, temp;
+	std::ifstream file(this->fileName);
+	if(!file.is_open()) {
+		std::cout << "Problem opening \"" << fileName << "\"" << std::endl;
+		exit(-1);
+	}
+	while(std::getline(file, temp))
+		text += temp + "\n";
+	file.close();
+	this->text = text;
+	this->generate();
+}
