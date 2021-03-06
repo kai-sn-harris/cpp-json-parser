@@ -1,0 +1,7 @@
+{
+	"varName": "Hello!",
+	"obj": {
+		"asd": "String inside object"
+	},
+	"array": ["String inside array"]
+}
