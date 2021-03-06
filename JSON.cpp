@@ -148,12 +148,14 @@ void JSON::rewriteJSON(AST* node) {
 void JSON::writeVal(std::string type, Value* value) {
 	if(type == "object" || type == "array")
 		this->rewriteJSON(value);
-	else if(type == "string" || type == "null")
+	else if(type == "string")
 		this->text += "\"" + dynamic_cast<String*>(value)->value + "\"";
+	else if(type == "null")
+		this->text += "null";
 	else if(type == "number")
 		this->text += std::to_string(dynamic_cast<Number*>(value)->value);
 	else if(type == "boolean")
-		this->text += std::to_string(dynamic_cast<Boolean*>(value)->value);
+		this->text += dynamic_cast<Boolean*>(value)->value ? "true" : "false";
 	else
 		std::runtime_error("Something went wrong in the JSON::rewriteJSON() function");
 }
