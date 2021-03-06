@@ -16,10 +16,8 @@ void Parser::error(std::string msg) {
 void Parser::eat(std::string type) {
     if(this->currentToken.type == type)
         this->currentToken = this->lexer.getNextToken();
-    else {
-        std::cout << this->currentToken.value << std::endl;
+    else
         this->error("Expected type: \"" + type + "\" got type: \"" + this->currentToken.type + '"');
-    }
 }
 
 Value* Parser::value() {
