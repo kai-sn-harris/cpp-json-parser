@@ -121,7 +121,7 @@ private:
     std::vector<std::any> visitArray(Value* node);
     std::vector<std::string> genKeyList(std::string key, bool &isRootArray) {
         isRootArray = false;
-        if(key.substr(0, 5) == "(ar)") {
+        if(key.substr(0, 4) == "(ar)") {
             isRootArray = true;
             key.erase(0, 4);
         }
