@@ -18,7 +18,7 @@ public:
     Lexer(std::string text);
     Lexer() = default;
 
-    void error(std::string msg);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+    void error(std::string msg);
 
     Token getNextToken();
     void advance();
