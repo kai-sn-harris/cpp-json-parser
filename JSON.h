@@ -69,17 +69,9 @@ public:
             convert key into a vector of key segments.
             Given the key "(ar)users.0.name" the array of segments is: ["users", "0", "name"]
         */
+        bool uselessButTheFunctionNeedsIt;
         std::vector<std::string> segs;
-        if(key.substr(0, 5) == "(ar)") key.erase(0, 4);
-        std::string word;
-        for(int i = 0; i < key.size(); i++) {
-            if(key[i] == '.') {
-                segs.push_back(word);
-                word = "";
-            } else word += key[i];
-        }
-        // last word
-        segs.push_back(word);
+        segs = this->genKeyList(key, uselessButTheFunctionNeedsIt);
 
         /*
             Modify the node at the key's location in the AST
@@ -152,6 +144,15 @@ private:
                     this->findAndModAST((AST*&)elem, segs, value);
                 }
             }
+        } else if(ast->ASTtype == "value" && (dynamic_cast<Value*>(ast)->type != "object" && dynamic_cast<Value*>(ast)->type != "array")) {
+            std::string type = dynamic_cast<Value*>(ast)->type;
+            std::cout << type << std::endl;
+            if(type == "string" || type == "null")
+                this->modNode(dynamic_cast<String*>(ast), value);
+            else if(type == "number")
+                this->modNode(dynamic_cast<Number*>(ast), value);
+            else if(type == "boolean")
+                this->modNode(dynamic_cast<Boolean*>(ast), value);
         } else if(ast->ASTtype == "value" && dynamic_cast<Value*>(ast)->type == "array") {
             auto values = dynamic_cast<Array*>(ast)->values;
             for(int i = 0; i < values.size(); i++) {
