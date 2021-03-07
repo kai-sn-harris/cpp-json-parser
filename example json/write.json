@@ -1,5 +1,7 @@
 {
-	"varName": "Hello!",
+	"varName": "Goodbye! 😂 ππππππππ",
+	"bool": true,
+	"null-test": null,
 	"obj": {
 		"asd": "String inside object"
 	},
