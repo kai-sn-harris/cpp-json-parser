@@ -74,7 +74,22 @@ If your json starts off with an array (like the example below) then your key wil
 
 The function required to extract the value `"object in root array"` is as follows: `json.get<float>("(ar)0.object in root array")` .
 
+## Writing to json
+
+In order to modify a JSON value in a file, the `JSON::write(key, value);` will do that for you.<br>
+Given the below JSON, if the value at `user.username` needed to be changed to `John Doe`, then the follow function is used: `json.write("user.username", "John Doe");`.
+
+```json
+{
+	"Example": "JSON",
+	"user": {
+		"username": "Anyonymous",
+		"email": "anon@example.com"
+	}
+}
+```
+
 ## Current Known Issues
 
--   Problems with character codes (things such as use of emojis 🙂 and special characters such as 'π')
 -   Memory leaks in AST
+-   Cannot modify a whole json object or array
