@@ -52,6 +52,8 @@ Value* Parser::value() {
         Null* nullPtr = new Null();
         return nullPtr;
     }
+
+    throw std::runtime_error("Something went wrong in Parser::value()");
 }
 
 std::vector<Value*> Parser::arrayList() {
@@ -107,5 +109,5 @@ AST* Parser::ast() {
     if(tokType == LSQUARE)
         return this->array();
     
-    this->error("Invalid json");
+    throw std::runtime_error("Invalid JSON");
 }
