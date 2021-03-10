@@ -8,4 +8,4 @@
 #define NUMBER "NUMBER"
 #define BOOLEAN "BOOLEAN"
 #define _NULL "NULL"
-#define EOF "EOF"
+#define _EOF "EOF"
