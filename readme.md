@@ -76,8 +76,8 @@ The function required to extract the value `"object in root array"` is as follow
 
 ## Writing to json
 
-In order to modify a JSON value in a file, the `JSON::write(key, value);` will do that for you.<br>
-Given the below JSON, if the value at `user.username` needed to be changed to `John Doe`, then the follow function is used: `json.write("user.username", "John Doe");`.
+In order to modify a JSON value in a file, the `JSON::write(key, value);` function will do that for you.<br>
+Given the below JSON, if the value at `user.username` needed to be changed to `John Doe`, then the following function is used: `json.write("user.username", "John Doe");`.<br>
 
 ```json
 {
@@ -89,6 +89,21 @@ Given the below JSON, if the value at `user.username` needed to be changed to `J
 }
 ```
 
-## Current Known Issues
+C++ example:
+
+```cpp
+#include "JSON.h"
+
+int main() {
+    JSON json("file.json");
+    std::cout << json.get<std::string>("user.username") << std::endl;
+    json.write("user.username", "John Doe");
+    std::cout << json.get<std::string>("user.username") << std::endl;
+}
+```
+
+This code prints out the initial value of `user.username`, then modifies it and prints out the new value.
+
+## Current Known Issues/Limitations
 
 -   Cannot modify a whole json object or array
