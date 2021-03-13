@@ -79,8 +79,7 @@ public:
         */
 
         // Gen the AST so that we can modify it
-        AST* ast = Parser(Lexer(this->text)).ast();
-        // dynamic_cast<String*>(dynamic_cast<Assign*>(dynamic_cast<Object*>(dynamic_cast<Value*>(ast))->values[0])->right)->value
+        auto ast = Parser(Lexer(this->text)).ast();
         this->findAndModAST(ast, segs, value);
         // Rewrite the json file
         this->text = "";
@@ -106,11 +105,11 @@ public:
 private:
     void generate();
     // reading json
-    void visitNode(AST* node, std::map<std::string, std::any> &map);
-    std::string visitString(Value* node);
-    float visitNumber(Value* node);
-    bool visitBoolean(Value* node);
-    std::vector<std::any> visitArray(Value* node);
+    void visitNode(std::shared_ptr<AST> node, std::map<std::string, std::any> &map);
+    std::string visitString(std::shared_ptr<Value> node);
+    float visitNumber(std::shared_ptr<Value> node);
+    bool visitBoolean(std::shared_ptr<Value> node);
+    std::vector<std::any> visitArray(std::shared_ptr<Value> node);
     std::vector<std::string> genKeyList(std::string key, bool &isRootArray) {
         isRootArray = false;
         if(key.substr(0, 4) == "(ar)") {
@@ -136,56 +135,56 @@ private:
         points to and modify it's value
     */
     template <class T>
-    void findAndModAST(AST* &ast, std::vector<std::string> segs, T value) {
-        if(ast->ASTtype == "value" && dynamic_cast<Value*>(ast)->type == "object") {
-            for(auto elem : dynamic_cast<Object*>(ast)->values) {
+    void findAndModAST(std::shared_ptr<AST> &ast, std::vector<std::string> segs, T value) {
+        if(ast->ASTtype == "value" && std::dynamic_pointer_cast<Value>(ast)->type == "object") {
+            for(auto elem : std::dynamic_pointer_cast<Object>(ast)->values) {
                 if(elem->left->value == segs[0]) {
                     if(segs.size() > 1) segs.erase(segs.begin());
-                    this->findAndModAST((AST*&)elem, segs, value);
+                    this->findAndModAST((std::shared_ptr<AST>&)elem, segs, value);
                 }
             }
-        } else if(ast->ASTtype == "value" && (dynamic_cast<Value*>(ast)->type != "object" && dynamic_cast<Value*>(ast)->type != "array")) {
-            std::string type = dynamic_cast<Value*>(ast)->type;
+        } else if(ast->ASTtype == "value" && (std::dynamic_pointer_cast<Value>(ast)->type != "object" && std::dynamic_pointer_cast<Value>(ast)->type != "array")) {
+            std::string type = std::dynamic_pointer_cast<Value>(ast)->type;
             std::cout << type << std::endl;
             if(type == "string" || type == "null")
-                this->modNode(dynamic_cast<String*>(ast), value);
+                this->modNode(std::dynamic_pointer_cast<String>(ast), value);
             else if(type == "number")
-                this->modNode(dynamic_cast<Number*>(ast), value);
+                this->modNode(std::dynamic_pointer_cast<Number>(ast), value);
             else if(type == "boolean")
-                this->modNode(dynamic_cast<Boolean*>(ast), value);
-        } else if(ast->ASTtype == "value" && dynamic_cast<Value*>(ast)->type == "array") {
-            auto values = dynamic_cast<Array*>(ast)->values;
+                this->modNode(std::dynamic_pointer_cast<Boolean>(ast), value);
+        } else if(ast->ASTtype == "value" && std::dynamic_pointer_cast<Value>(ast)->type == "array") {
+            auto values = std::dynamic_pointer_cast<Array>(ast)->values;
             for(int i = 0; i < values.size(); i++) {
                 if(i == std::stoi(segs[0])) {
                     if(segs.size() > 1)
                         segs.erase(segs.begin());
-                    this->findAndModAST((AST*&)values[i], segs, value);
+                    this->findAndModAST((std::shared_ptr<AST>&)values[i], segs, value);
                 }
             }
         } else if(ast->ASTtype == "assign") {
-            auto node = dynamic_cast<Assign*>(ast);
-            if(node->right->type == "object" || node->right->type == "array") this->findAndModAST((AST*&)node->right, segs, value);
+            auto node = std::dynamic_pointer_cast<Assign>(ast);
+            if(node->right->type == "object" || node->right->type == "array") this->findAndModAST((std::shared_ptr<AST>&)node->right, segs, value);
             else if(node->left->value == segs[0]) {
-                std::string type = dynamic_cast<Value*>(node->right)->type;
+                std::string type = std::dynamic_pointer_cast<Value>(node->right)->type;
                 /*
                     Will add JSON object classes that are user friendly in coming updates so that it is possible
                     to modify a whole json object/array instead of an individual value
                 */
                 if(type == "string" || type == "null")
-                    this->modNode(dynamic_cast<String*>(node->right), value);
+                    this->modNode(std::dynamic_pointer_cast<String>(node->right), value);
                 else if(type == "number")
-                    this->modNode(dynamic_cast<Number*>(node->right), value);
+                    this->modNode(std::dynamic_pointer_cast<Number>(node->right), value);
                 else if(type == "boolean")
-                    this->modNode(dynamic_cast<Boolean*>(node->right), value);
+                    this->modNode(std::dynamic_pointer_cast<Boolean>(node->right), value);
             }
         }
     }
 
-    void modNode(AST* node, std::string value);
-    void modNode(AST* node, const char* value);
-    void modNode(AST* node, bool value);
-    void modNode(AST* node, float value);
+    void modNode(std::shared_ptr<AST> node, std::string value);
+    void modNode(std::shared_ptr<AST> node, const char* value);
+    void modNode(std::shared_ptr<AST> node, bool value);
+    void modNode(std::shared_ptr<AST> node, float value);
 
-    void rewriteJSON(AST* ast);
-    void writeVal(std::string type, Value* value);
+    void rewriteJSON(std::shared_ptr<AST> ast);
+    void writeVal(std::string type, std::shared_ptr<Value> value);
 };

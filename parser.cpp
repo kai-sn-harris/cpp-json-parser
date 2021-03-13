@@ -2,6 +2,7 @@
 #include "types.h"
 #include "AST.h"
 #include <iostream>
+#include <memory>
 
 Parser::Parser(Lexer lexer) {
     this->lexer = lexer;
@@ -20,44 +21,44 @@ void Parser::eat(std::string type) {
         this->error("Expected type: \"" + type + "\" got type: \"" + this->currentToken.type + '"');
 }
 
-Value* Parser::value() {
+std::shared_ptr<Value> Parser::value() {
     Token tok = this->currentToken;
     if(tok.type == STRING) {
         this->eat(STRING);
-        String* stringPtr = new String(tok.value);
+        auto stringPtr = std::make_shared<String>(String(tok.value));
         return stringPtr;
     }
     if(tok.type == NUMBER) {
         this->eat(NUMBER);
-        Number* numberPtr = new Number(std::stof(tok.value));
-        return numberPtr;
+        auto numPtr = std::make_shared<Number>(Number(std::stof(tok.value)));
+        return numPtr;
     }
     // first token type for object
     if(tok.type == LCURL) {
-        Value* objectPtr = this->object();
+        std::shared_ptr<Value> objectPtr = this->object();
         return objectPtr;
     }
     // first token type for array
     if(tok.type == LSQUARE) {
-        Value* arrayPtr = this->array();
+        std::shared_ptr<Value> arrayPtr = this->array();
         return arrayPtr;
     }
     if(tok.type == BOOLEAN) {
         this->eat(BOOLEAN);
-        Boolean* stringPtr = new Boolean(tok.value == "true" ? true : false);
+        std::shared_ptr<Boolean> stringPtr = std::make_shared<Boolean>(Boolean(tok.value == "true" ? true : false));
         return stringPtr;
     }
     if(tok.type == _NULL) {
         this->eat(_NULL);
-        Null* nullPtr = new Null();
+        std::shared_ptr<Null> nullPtr = std::make_shared<Null>();
         return nullPtr;
     }
 
     throw std::runtime_error("Something went wrong in Parser::value()");
 }
 
-std::vector<Value*> Parser::arrayList() {
-    std::vector<Value*> values;
+std::vector<std::shared_ptr<Value>> Parser::arrayList() {
+    std::vector<std::shared_ptr<Value>> values;
 
     std::string tokType = this->currentToken.type;
     if(tokType == STRING || tokType == NUMBER || 
@@ -74,18 +75,20 @@ std::vector<Value*> Parser::arrayList() {
     return values;
 }
 
-Value* Parser::array() {
+std::shared_ptr<Value> Parser::array() {
     this->eat(LSQUARE);
-    std::vector<Value*> values = this->arrayList();
+    auto values = this->arrayList();
     this->eat(RSQUARE);
-    return new Array(values);
+    auto arrayPtr = std::make_shared<Array>(Array(values));
+    // arrayPtr->values = values;
+    return std::dynamic_pointer_cast<Value>(arrayPtr);
 }
 
-std::vector<Assign*> Parser::objectList() {
-    String* left = new String(this->currentToken.value);
+std::vector<std::shared_ptr<Assign>> Parser::objectList() {
+    auto left = std::make_shared<String>(String(this->currentToken.value));
     this->eat(STRING);
     this->eat(COLON);
-    std::vector<Assign*> values = { new Assign(left, this->value()) };
+    std::vector<std::shared_ptr<Assign>> values = { std::make_shared<Assign>(Assign(left, this->value())) };
     while(this->currentToken.type == COMMA) {
         this->eat(COMMA);
         for(auto elem : this->objectList())
@@ -94,15 +97,16 @@ std::vector<Assign*> Parser::objectList() {
     return values;
 }
 
-Value* Parser::object() {
+std::shared_ptr<Value> Parser::object() {
     this->eat(LCURL);
-    std::vector<Assign*> values = this->objectList();
+    auto values = this->objectList();
     this->eat(RCURL);
-    Object* objPtr = new Object(values);
+    auto objPtr = std::make_shared<Object>();
+    objPtr->values = values;
     return objPtr;
 }
 
-AST* Parser::ast() {
+std::shared_ptr<AST> Parser::ast() {
     std::string tokType = this->currentToken.type;
     if(tokType == LCURL)
         return this->object();

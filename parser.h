@@ -2,6 +2,7 @@
 
 #include "lexer.h"
 #include "AST.h"
+#include <memory>
 
 class Parser {
 public:
@@ -12,13 +13,13 @@ public:
     void eat(std::string type);
     void error(std::string msg); 
 
-    Value* object();
-    std::vector<Assign*> objectList();
+    std::shared_ptr<Value> object();
+    std::vector<std::shared_ptr<Assign>> objectList();
 
-    Value* array();
-    std::vector<Value*> arrayList();
+    std::shared_ptr<Value> array();
+    std::vector<std::shared_ptr<Value>> arrayList();
 
-    Value* value();
+    std::shared_ptr<Value> value();
 
-    AST* ast();
+    std::shared_ptr<AST> ast();
 };

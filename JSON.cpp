@@ -16,29 +16,29 @@ JSON::JSON(std::string fileName) {
 }
 
 // Visiting Nodes
-void JSON::visitNode(AST* node, std::map<std::string, std::any> &map) {
+void JSON::visitNode(std::shared_ptr<AST> node, std::map<std::string, std::any> &map) {
 	if(node->ASTtype == "assign") {
-		Assign* assignPtr = dynamic_cast<Assign*>(node);
+		auto assignPtr = std::dynamic_pointer_cast<Assign>(node);
 		std::string left = assignPtr->left->value;
 
 		std::string rightType = assignPtr->right->type;
 		if(rightType == "string") {
-			String* stringPtr = dynamic_cast<String*>(assignPtr->right);
+			auto stringPtr = std::dynamic_pointer_cast<String>(assignPtr->right);
 			map.insert(std::pair<std::string, std::any>(left, std::string(stringPtr->value)));
 		}
 		if(rightType == "number") {
-			Number* numberPtr = dynamic_cast<Number*>(assignPtr->right);
+			auto numberPtr = std::dynamic_pointer_cast<Number>(assignPtr->right);
 			map.insert(std::pair<std::string, std::any>(left, numberPtr->value));
 		}
 		if(rightType == "boolean") {
-			Boolean* booleanPtr = dynamic_cast<Boolean*>(assignPtr->right);
+			auto booleanPtr = std::dynamic_pointer_cast<Boolean>(assignPtr->right);
 			map.insert(std::pair<std::string, std::any>(left, booleanPtr->value));
 		}
 		if(rightType == "null") {
 			map.insert(std::pair<std::string, std::any>(left, std::string("null")));
 		}
 		if(rightType == "object") {
-			Object* objPtr = dynamic_cast<Object*>(assignPtr->right);
+			auto objPtr = std::dynamic_pointer_cast<Object>(assignPtr->right);
 			std::map<std::string, std::any> objMap;
 			for(auto elem : objPtr->values)
 				this->visitNode(elem, objMap);
@@ -50,9 +50,9 @@ void JSON::visitNode(AST* node, std::map<std::string, std::any> &map) {
 		}
 	}
 	if(node->ASTtype == "value") {
-		Value* valuePtr = dynamic_cast<Value*>(node);
+		auto valuePtr = std::dynamic_pointer_cast<Value>(node);
 		if(valuePtr->type == "object") {
-			for(auto elem : dynamic_cast<Object*>(node)->values)
+			for(auto elem : std::dynamic_pointer_cast<Object>(node)->values)
 				this->visitNode(elem, map);
 		}
 		if(valuePtr->type == "array") {
@@ -61,20 +61,20 @@ void JSON::visitNode(AST* node, std::map<std::string, std::any> &map) {
 	}
 }
 
-std::string JSON::visitString(Value* node) {
-	return dynamic_cast<String*>(node)->value;
+std::string JSON::visitString(std::shared_ptr<Value> node) {
+	return std::dynamic_pointer_cast<String>(node)->value;
 }
 
-float JSON::visitNumber(Value* node) {
-	return dynamic_cast<Number*>(node)->value;
+float JSON::visitNumber(std::shared_ptr<Value> node) {
+	return std::dynamic_pointer_cast<Number>(node)->value;
 }
 
-bool JSON::visitBoolean(Value* node) {
-	return dynamic_cast<Boolean*>(node)->value;
+bool JSON::visitBoolean(std::shared_ptr<Value> node) {
+	return std::dynamic_pointer_cast<Boolean>(node)->value;
 }
 
-std::vector<std::any> JSON::visitArray(Value* node) {
-	Array* arrayPtr = dynamic_cast<Array*>(node);
+std::vector<std::any> JSON::visitArray(std::shared_ptr<Value> node) {
+	auto arrayPtr = std::dynamic_pointer_cast<Array>(node);
 	std::vector<std::any> values;
 	for(auto elem : arrayPtr->values) {
 		if(elem->type == "string") values.push_back(this->visitString(elem));
@@ -82,7 +82,7 @@ std::vector<std::any> JSON::visitArray(Value* node) {
 		if(elem->type == "null") values.push_back(std::string("null"));
 		if(elem->type == "boolean") values.push_back(this->visitBoolean(elem));
 		if(elem->type == "object") {
-			Object* objPtr = dynamic_cast<Object*>(elem);
+			auto objPtr = std::dynamic_pointer_cast<Object>(elem);
 			std::map<std::string, std::any> objMap;
 			for(auto elem : objPtr->values)
 				this->visitNode(elem, objMap);
@@ -100,62 +100,62 @@ void JSON::generate() {
 	this->visitNode(parser.ast(), this->variables);
 }
 
-void JSON::modNode(AST* node, std::string value) {
-	dynamic_cast<String*>(node)->value = value;
+void JSON::modNode(std::shared_ptr<AST> node, std::string value) {
+	std::dynamic_pointer_cast<String>(node)->value = value;
 }
-void JSON::modNode(AST* node, const char* value) {
-	dynamic_cast<String*>(node)->value = std::string(value);
+void JSON::modNode(std::shared_ptr<AST> node, const char* value) {
+	std::dynamic_pointer_cast<String>(node)->value = std::string(value);
 }
-void JSON::modNode(AST* node, bool value) {
-	dynamic_cast<Boolean*>(node)->value = value;
+void JSON::modNode(std::shared_ptr<AST> node, bool value) {
+	std::dynamic_pointer_cast<Boolean>(node)->value = value;
 }
-void JSON::modNode(AST* node, float value) {
-	dynamic_cast<Number*>(node)->value = value;
+void JSON::modNode(std::shared_ptr<AST> node, float value) {
+	std::dynamic_pointer_cast<Number>(node)->value = value;
 }
 
-void JSON::rewriteJSON(AST* node) {
+void JSON::rewriteJSON(std::shared_ptr<AST> node) {
 	/*
 		This function acts like a parser, but instead of generating an AST,
 		it generates a string of json
 	*/
 
 	// check if the root type is object or array
-	if(node->ASTtype == "value" && dynamic_cast<Value*>(node)->type == "object") {
+	if(node->ASTtype == "value" && std::dynamic_pointer_cast<Value>(node)->type == "object") {
 		this->text += "{";
-		for(int i = 0; i < dynamic_cast<Object*>(node)->values.size(); i++) {
-			this->rewriteJSON(dynamic_cast<Object*>(node)->values[i]);
-			if(i < dynamic_cast<Object*>(node)->values.size()-1) this->text += ",";
+		for(int i = 0; i < std::dynamic_pointer_cast<Object>(node)->values.size(); i++) {
+			this->rewriteJSON(std::dynamic_pointer_cast<Object>(node)->values[i]);
+			if(i < std::dynamic_pointer_cast<Object>(node)->values.size()-1) this->text += ",";
 		}
 		this->text += "}";
-	} else if(node->ASTtype == "value" && dynamic_cast<Value*>(node)->type == "array") {
+	} else if(node->ASTtype == "value" && std::dynamic_pointer_cast<Value>(node)->type == "array") {
 		this->text += "[";
-		for(int i = 0; i < dynamic_cast<Array*>(node)->values.size(); i++) {
-			this->rewriteJSON(dynamic_cast<Array*>(node)->values[i]);
-			if(i < dynamic_cast<Array*>(node)->values.size()-1) this->text += ",";
+		for(int i = 0; i < std::dynamic_pointer_cast<Array>(node)->values.size(); i++) {
+			this->rewriteJSON(std::dynamic_pointer_cast<Array>(node)->values[i]);
+			if(i < std::dynamic_pointer_cast<Array>(node)->values.size()-1) this->text += ",";
 		}
 		this->text += "]";
 	} else if(node->ASTtype == "assign") {
-		auto assignPtr = dynamic_cast<Assign*>(node);
+		auto assignPtr = std::dynamic_pointer_cast<Assign>(node);
 		this->text += "\"" + assignPtr->left->value + "\":";
 		this->writeVal(assignPtr->right->type, assignPtr->right);
 	} else if(node->ASTtype == "value") {
-		auto valPtr = dynamic_cast<Value*>(node);
+		auto valPtr = std::dynamic_pointer_cast<Value>(node);
 		std::string valType = valPtr->type;
 		this->writeVal(valPtr->type, valPtr);
 	}
 }
 
-void JSON::writeVal(std::string type, Value* value) {
+void JSON::writeVal(std::string type, std::shared_ptr<Value> value) {
 	if(type == "object" || type == "array")
 		this->rewriteJSON(value);
 	else if(type == "string")
-		this->text += "\"" + dynamic_cast<String*>(value)->value + "\"";
+		this->text += "\"" + std::dynamic_pointer_cast<String>(value)->value + "\"";
 	else if(type == "null")
 		this->text += "null";
 	else if(type == "number")
-		this->text += std::to_string(dynamic_cast<Number*>(value)->value);
+		this->text += std::to_string(std::dynamic_pointer_cast<Number>(value)->value);
 	else if(type == "boolean")
-		this->text += dynamic_cast<Boolean*>(value)->value ? "true" : "false";
+		this->text += std::dynamic_pointer_cast<Boolean>(value)->value ? "true" : "false";
 	else
 		std::runtime_error("Something went wrong in the JSON::rewriteJSON() function");
 }

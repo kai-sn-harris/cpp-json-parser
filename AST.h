@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <memory>
 
 class AST {
 public:
@@ -41,21 +42,21 @@ public:
 
 class Assign : public AST {
 public:
-    String* left;
-    Value* right;
-    Assign(String* left, Value* right):
+    std::shared_ptr<String> left;
+    std::shared_ptr<Value> right;
+    Assign(std::shared_ptr<String> left, std::shared_ptr<Value> right):
         left(left), right(right), AST("assign") {}
 };
 
 class Object : public Value {
 public:
-    std::vector<Assign*> values;
-    Object(std::vector<Assign*> values): values(values), Value("object") {}
+    std::vector<std::shared_ptr<Assign>> values;
+    Object(std::vector<std::shared_ptr<Assign>> values): values(values), Value("object") {}
     Object(): Value("object") {}
 };
 
 class Array : public Value {
 public:
-    std::vector<Value*> values;
-    Array(std::vector<Value*> values): values(values), Value("array") {}
+    std::vector<std::shared_ptr<Value>> values;
+    Array(std::vector<std::shared_ptr<Value>> values): values(values), Value("array") {}
 };
