@@ -91,5 +91,4 @@ Given the below JSON, if the value at `user.username` needed to be changed to `J
 
 ## Current Known Issues
 
--   Memory leaks in AST
 -   Cannot modify a whole json object or array
