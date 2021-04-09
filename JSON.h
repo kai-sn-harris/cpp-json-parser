@@ -170,6 +170,7 @@ private:
     std::shared_ptr<Value> createNode(const char* value);
     std::shared_ptr<Value> createNode(bool value);
     std::shared_ptr<Value> createNode(float value);
+    std::shared_ptr<Value> createNode(long long int value);
 
     void rewriteJSON(std::shared_ptr<AST> ast);
     void writeVal(std::string type, std::shared_ptr<Value> value);

@@ -116,6 +116,10 @@ std::shared_ptr<Value> JSON::createNode(float value) {
 	auto node = std::make_shared<Number>(Number(value));
 	return std::dynamic_pointer_cast<Value>(node);
 }
+std::shared_ptr<Value> JSON::createNode(long long int value) {
+	auto node = std::make_shared<Null>(Null());
+	return std::dynamic_pointer_cast<Value>(node);
+}
 
 void JSON::rewriteJSON(std::shared_ptr<AST> node) {
 	/*
