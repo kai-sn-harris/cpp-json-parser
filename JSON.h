@@ -22,8 +22,12 @@ public:
     template <class T>
     T get(std::string key) {
         std::string raw_key = key;
-        bool isRootArray;
-        std::vector<std::string> keys = this->genKeyList(key, isRootArray);
+        bool isRootArray = false;
+        if(key.substr(0, 4) == "(ar)") {
+            isRootArray = true;
+            key.erase(0, 4);
+        }
+        std::vector<std::string> keys = this->genKeyList(key);
 
         std::any value;
         for(int i = 0; i < keys.size(); i++) {
@@ -61,17 +65,18 @@ public:
     // Modifiying an existing json file
     /*
         This function modifies the AST and then will modify
-        a json file out of the values stored in that AST
+        a json file out of the values stored in that AST. 
+        A flag is available to determine whether or not the
+        user would like the json file to be modified (true by default)
     */
     template <class T>
-    void write(std::string key, T value) {
+    void write(std::string key, T value, bool editFile=true) {
         /* 
             convert key into a vector of key segments.
             Given the key "(ar)users.0.name" the array of segments is: ["users", "0", "name"]
         */
-        bool uselessButTheFunctionNeedsIt;
         std::vector<std::string> segs;
-        segs = this->genKeyList(key, uselessButTheFunctionNeedsIt);
+        segs = this->genKeyList(key);
 
         /*
             Modify the node at the key's location in the AST
@@ -84,11 +89,13 @@ public:
         // Rewrite the json file
         this->text = "";
         this->rewriteJSON(ast);
-        // write newly generated text to json file
-        std::ofstream file;
-        file.open(this->fileName, std::ofstream::out | std::ofstream::trunc);
-        file << this->text;
-        file.close();
+        if(editFile) {
+            // write newly generated text to json file
+            std::ofstream file;
+            file.open(this->fileName, std::ofstream::out | std::ofstream::trunc);
+            file << this->text;
+            file.close();
+        }
 
         // refresh the AST so that this->get<>() works
         // empty variables and root array
@@ -110,12 +117,7 @@ private:
     float visitNumber(std::shared_ptr<Value> node);
     bool visitBoolean(std::shared_ptr<Value> node);
     std::vector<std::any> visitArray(std::shared_ptr<Value> node);
-    std::vector<std::string> genKeyList(std::string key, bool &isRootArray) {
-        isRootArray = false;
-        if(key.substr(0, 4) == "(ar)") {
-            isRootArray = true;
-            key.erase(0, 4);
-        }
+    std::vector<std::string> genKeyList(std::string key) {
         std::vector<std::string> keys;
         std::string word;
         for(int i = 0; i < key.size(); i++) {
@@ -141,49 +143,33 @@ private:
                 if(elem->left->value == segs[0]) {
                     if(segs.size() > 1) segs.erase(segs.begin());
                     this->findAndModAST((std::shared_ptr<AST>&)elem, segs, value);
+                    break;
                 }
             }
         } else if(ast->ASTtype == "value" && (std::dynamic_pointer_cast<Value>(ast)->type != "object" && std::dynamic_pointer_cast<Value>(ast)->type != "array")) {
-            std::string type = std::dynamic_pointer_cast<Value>(ast)->type;
-            std::cout << type << std::endl;
-            if(type == "string" || type == "null")
-                this->modNode(std::dynamic_pointer_cast<String>(ast), value);
-            else if(type == "number")
-                this->modNode(std::dynamic_pointer_cast<Number>(ast), value);
-            else if(type == "boolean")
-                this->modNode(std::dynamic_pointer_cast<Boolean>(ast), value);
+            ast = this->createNode(value);
         } else if(ast->ASTtype == "value" && std::dynamic_pointer_cast<Value>(ast)->type == "array") {
-            auto values = std::dynamic_pointer_cast<Array>(ast)->values;
-            for(int i = 0; i < values.size(); i++) {
-                if(i == std::stoi(segs[0])) {
-                    if(segs.size() > 1)
-                        segs.erase(segs.begin());
-                    this->findAndModAST((std::shared_ptr<AST>&)values[i], segs, value);
-                }
+            if(std::stoi(segs[0]) < std::dynamic_pointer_cast<Array>(ast)->values.size()) {
+                if(segs.size() > 1) segs.erase(segs.begin());
+                this->findAndModAST((std::shared_ptr<AST>&)std::dynamic_pointer_cast<Array>(ast)->values[std::stoi(segs[0])], segs, value);
             }
         } else if(ast->ASTtype == "assign") {
             auto node = std::dynamic_pointer_cast<Assign>(ast);
             if(node->right->type == "object" || node->right->type == "array") this->findAndModAST((std::shared_ptr<AST>&)node->right, segs, value);
             else if(node->left->value == segs[0]) {
-                std::string type = std::dynamic_pointer_cast<Value>(node->right)->type;
                 /*
                     Will add JSON object classes that are user friendly in coming updates so that it is possible
                     to modify a whole json object/array instead of an individual value
                 */
-                if(type == "string" || type == "null")
-                    this->modNode(std::dynamic_pointer_cast<String>(node->right), value);
-                else if(type == "number")
-                    this->modNode(std::dynamic_pointer_cast<Number>(node->right), value);
-                else if(type == "boolean")
-                    this->modNode(std::dynamic_pointer_cast<Boolean>(node->right), value);
+                node->right = this->createNode(value);
             }
         }
     }
 
-    void modNode(std::shared_ptr<AST> node, std::string value);
-    void modNode(std::shared_ptr<AST> node, const char* value);
-    void modNode(std::shared_ptr<AST> node, bool value);
-    void modNode(std::shared_ptr<AST> node, float value);
+    std::shared_ptr<Value> createNode(std::string value);
+    std::shared_ptr<Value> createNode(const char* value);
+    std::shared_ptr<Value> createNode(bool value);
+    std::shared_ptr<Value> createNode(float value);
 
     void rewriteJSON(std::shared_ptr<AST> ast);
     void writeVal(std::string type, std::shared_ptr<Value> value);
