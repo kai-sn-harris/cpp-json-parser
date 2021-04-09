@@ -29,7 +29,7 @@ int main() {
 
 ## How to use my JSON parser
 
-First of all, include the damn header!<br/>
+First of all, include the header.<br/>
 `#include <JSON.h>`<br/>
 Next, create a json object like this: <br/>
 
@@ -76,15 +76,26 @@ The function required to extract the value `"object in root array"` is as follow
 
 ## Writing to json
 
-In order to modify a JSON value in a file, the `JSON::write(key, value);` function will do that for you.<br>
-Given the below JSON, if the value at `user.username` needed to be changed to `John Doe`, then the following function is used: `json.write("user.username", "John Doe");`.<br>
+In order to modify JSON, the `JSON::write(key, value [, writeToFile]);` function is used<br>
+Given the below JSON, (assuming a JSON object has been created under the name `json`) if the value at `user.username` needed to be changed to `John Doe`, then the following function call is used:
+
+```c++
+json.write("user.username", "John Doe");
+```
+
+If the value at `user.email` needed to be changed to `null` then the following function call is used:
+
+```c++
+json.write("user.email", NULL)
+```
 
 ```json
 {
 	"Example": "JSON",
 	"user": {
 		"username": "Anyonymous",
-		"email": "anon@example.com"
+		"email": "anon@example.com",
+		"phone-number": 01189998819991197253
 	}
 }
 ```
@@ -107,3 +118,4 @@ This code prints out the initial value of `user.username`, then modifies it and 
 ## Current Known Issues/Limitations
 
 -   Cannot modify a whole json object or array
+-   Cannot input number with an exponent
